@@ -72,8 +72,8 @@ public class UIManager : MonoBehaviour
         canvas.sortingOrder = 10;
         var scaler = cvsGO.AddComponent<CanvasScaler>();
         scaler.uiScaleMode         = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
-        scaler.matchWidthOrHeight  = 0.5f;
+        scaler.referenceResolution = new Vector2(1080, 1920);
+        scaler.matchWidthOrHeight  = 1f;
         cvsGO.AddComponent<GraphicRaycaster>();
         var root = cvsGO.transform;
 
