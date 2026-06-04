@@ -1,0 +1,102 @@
+{
+  "days": [
+    {
+      "dayNumber": 1,
+      "title": "Köhnə günlər",
+      "orderCount": 3,
+      "weather": "clear",
+      "unlockRobot": false,
+      "unlockDrone": false,
+      "routeAiActive": false,
+      "goalDescription": "2 sifariş çatdır",
+      "goalDeliveries": 2,
+      "goalReputation": 0,
+      "goalMoney": 0,
+      "goalSuccessRate": 0
+    },
+    {
+      "dayNumber": 2,
+      "title": "İlk robot",
+      "orderCount": 4,
+      "weather": "clear",
+      "unlockRobot": true,
+      "unlockDrone": false,
+      "routeAiActive": false,
+      "goalDescription": "Reputasiya ≥ 55",
+      "goalDeliveries": 0,
+      "goalReputation": 55,
+      "goalMoney": 0,
+      "goalSuccessRate": 0
+    },
+    {
+      "dayNumber": 3,
+      "title": "İlk dron",
+      "orderCount": 5,
+      "weather": "clear",
+      "unlockRobot": false,
+      "unlockDrone": true,
+      "routeAiActive": false,
+      "goalDescription": "Reputasiya ≥ 60 və kredit ≥ 600",
+      "goalDeliveries": 0,
+      "goalReputation": 60,
+      "goalMoney": 600,
+      "goalSuccessRate": 0
+    },
+    {
+      "dayNumber": 4,
+      "title": "ROUTE gücü",
+      "orderCount": 6,
+      "weather": "windy",
+      "unlockRobot": false,
+      "unlockDrone": false,
+      "routeAiActive": true,
+      "goalDescription": "Uğur faizi ≥ 70%",
+      "goalDeliveries": 0,
+      "goalReputation": 0,
+      "goalMoney": 0,
+      "goalSuccessRate": 70
+    },
+    {
+      "dayNumber": 5,
+      "title": "Rəqib təzyiqi",
+      "orderCount": 7,
+      "weather": "rain",
+      "unlockRobot": false,
+      "unlockDrone": false,
+      "routeAiActive": true,
+      "goalDescription": "Reputasiya ≥ 65",
+      "goalDeliveries": 0,
+      "goalReputation": 65,
+      "goalMoney": 0,
+      "goalSuccessRate": 0
+    },
+    {
+      "dayNumber": 6,
+      "title": "Pik gün",
+      "orderCount": 9,
+      "weather": "mixed",
+      "unlockRobot": false,
+      "unlockDrone": false,
+      "routeAiActive": true,
+      "goalDescription": "6 sifariş çatdır",
+      "goalDeliveries": 6,
+      "goalReputation": 0,
+      "goalMoney": 0,
+      "goalSuccessRate": 0
+    },
+    {
+      "dayNumber": 7,
+      "title": "Final",
+      "orderCount": 10,
+      "weather": "mixed",
+      "unlockRobot": false,
+      "unlockDrone": false,
+      "routeAiActive": true,
+      "goalDescription": "Reputasiya ≥ 70 və kredit ≥ 1000",
+      "goalDeliveries": 0,
+      "goalReputation": 70,
+      "goalMoney": 1000,
+      "goalSuccessRate": 0
+    }
+  ]
+}

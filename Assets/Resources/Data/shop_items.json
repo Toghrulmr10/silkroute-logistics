@@ -1,0 +1,49 @@
+{
+  "items": [
+    {
+      "id": "extra_robot",
+      "displayName": "Əlavə robot",
+      "description": "+1 anbar robotu əlavə olunur",
+      "price": 150,
+      "isOneTime": false,
+      "effectType": "add_robot",
+      "effectValue": 1
+    },
+    {
+      "id": "extra_drone",
+      "displayName": "Əlavə dron",
+      "description": "+1 çatdırma dronu əlavə olunur",
+      "price": 200,
+      "isOneTime": false,
+      "effectType": "add_drone",
+      "effectValue": 1
+    },
+    {
+      "id": "fast_drone",
+      "displayName": "Sürətli dron",
+      "description": "Bütün dronların sürəti +50%",
+      "price": 350,
+      "isOneTime": true,
+      "effectType": "drone_speed",
+      "effectValue": 1.5
+    },
+    {
+      "id": "bigger_battery",
+      "displayName": "Böyük batareya",
+      "description": "Bütün dronların batareyası +40%",
+      "price": 250,
+      "isOneTime": true,
+      "effectType": "battery",
+      "effectValue": 1.4
+    },
+    {
+      "id": "route_upgrade",
+      "displayName": "ROUTE yüksəltməsi",
+      "description": "Risk -10%, tövsiyə dəqiqliyi artır",
+      "price": 400,
+      "isOneTime": true,
+      "effectType": "route_upgrade",
+      "effectValue": 0.1
+    }
+  ]
+}
