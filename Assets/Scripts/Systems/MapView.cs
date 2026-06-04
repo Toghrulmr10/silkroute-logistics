@@ -7,29 +7,40 @@ public class MapView : MonoBehaviour
 {
     public static MapView Instance { get; private set; }
 
-    static readonly (string Name, Vector2 UV)[] Cities =
+    // Şənzin rayonları — Bao'an (anbar) solda, şərqə doğru uzanır
+    static readonly (string Name, Vector2 UV)[] Districts =
     {
-        ("Xi'an",          new Vector2(0.10f, 0.46f)),
-        ("Dunhuang",       new Vector2(0.27f, 0.61f)),
-        ("Kashgar",        new Vector2(0.43f, 0.55f)),
-        ("Samarkand",      new Vector2(0.57f, 0.59f)),
-        ("Merv",           new Vector2(0.67f, 0.46f)),
-        ("Baghdad",        new Vector2(0.78f, 0.34f)),
-        ("Constantinople", new Vector2(0.91f, 0.57f)),
+        ("Bao'an (Anbar)",  new Vector2(0.10f, 0.52f)),
+        ("Nanshan",         new Vector2(0.28f, 0.37f)),
+        ("Futian",          new Vector2(0.46f, 0.30f)),
+        ("Luohu",           new Vector2(0.63f, 0.32f)),
+        ("Longgang",        new Vector2(0.77f, 0.52f)),
+        ("Yantian Limanı",  new Vector2(0.90f, 0.40f)),
+    };
+
+    // Şəhərdaxili yollar (rayon cütləri)
+    static readonly (int A, int B)[] Roads =
+    {
+        (0, 1), // Bao'an → Nanshan
+        (1, 2), // Nanshan → Futian
+        (2, 3), // Futian → Luohu
+        (2, 4), // Futian → Longgang (şimal halqası)
+        (3, 4), // Luohu → Longgang
+        (4, 5), // Longgang → Yantian Limanı
     };
 
     static readonly Color[] TypeColors =
     {
-        new Color(0.35f, 1.0f,  0.45f), // Courier  — green
-        new Color(1.0f,  0.65f, 0.2f),  // Robot    — orange
-        new Color(0.3f,  0.85f, 1.0f),  // Drone    — cyan
+        new Color(0.35f, 1.0f,  0.45f), // Kuryer  — yaşıl
+        new Color(1.0f,  0.65f, 0.2f),  // Robot   — narıncı
+        new Color(0.3f,  0.85f, 1.0f),  // Dron    — mavi
     };
 
     RectTransform _panel;
     Transform _gridLayer;
-    Transform _staticRouteLayer;
+    Transform _roadLayer;
     Transform _activeRouteLayer;
-    Transform _cityLayer;
+    Transform _districtLayer;
     Transform _vehicleLayer;
 
     readonly Dictionary<int, List<GameObject>> _routeLines = new();
@@ -50,10 +61,15 @@ public class MapView : MonoBehaviour
         EventBus.OnOrderDelivered += o => RemoveOrder(o.Id);
         EventBus.OnOrderFailed    += o => RemoveOrder(o.Id);
 
+        // Vehicle rəngini real çatdırılma tipinə görə yenilə
+        EventBus.OnDroneLaunched      += (drone, order)        => UpdateVehicleColor(order.Id, (int)DeliveryType.Drone);
+        EventBus.OnRobotStarted       += (robot, order)        => UpdateVehicleColor(order.Id, (int)DeliveryType.Robot);
+        EventBus.OnCourierDelivered   += (courier, order, _)   => UpdateVehicleColor(order.Id, (int)DeliveryType.Courier);
+
         StartCoroutine(DrawAfterLayout());
     }
 
-    // ── Panel construction ───────────────────────────────────────────────────
+    // ── Panel qurulması ──────────────────────────────────────────────────────
 
     void BuildPanel(Transform canvasRoot)
     {
@@ -66,12 +82,12 @@ public class MapView : MonoBehaviour
         _panel.anchorMax = Vector2.one;
         _panel.offsetMin = Vector2.zero;
         _panel.offsetMax = new Vector2(-380f, -56f);
-        _panel.SetAsFirstSibling(); // render behind top bar and orders panel
+        _panel.SetAsFirstSibling();
 
         _gridLayer        = MakeLayer("Grid");
-        _staticRouteLayer = MakeLayer("StaticRoutes");
+        _roadLayer        = MakeLayer("Roads");
         _activeRouteLayer = MakeLayer("ActiveRoutes");
-        _cityLayer        = MakeLayer("Cities");
+        _districtLayer    = MakeLayer("Districts");
         _vehicleLayer     = MakeLayer("Vehicles");
 
         AddTitle();
@@ -83,10 +99,10 @@ public class MapView : MonoBehaviour
         var go = new GameObject("Title");
         go.transform.SetParent(_panel, false);
         var t = go.AddComponent<Text>();
-        t.text      = "TRADE ROUTES";
+        t.text      = "深圳 — SHENZHEN";
         t.fontSize  = 13;
         t.fontStyle = FontStyle.Bold;
-        t.color     = new Color(0.85f, 0.72f, 0.28f, 0.65f);
+        t.color     = new Color(0.85f, 0.72f, 0.28f, 0.70f);
         t.font      = GetBuiltinFont();
         t.alignment = TextAnchor.UpperLeft;
         var rt = t.rectTransform;
@@ -98,7 +114,7 @@ public class MapView : MonoBehaviour
 
     void AddLegend()
     {
-        string[] labels = { "Courier", "Robot", "Drone" };
+        string[] labels = { "Kuryer", "Robot", "Dron" };
         for (int i = 0; i < 3; i++)
         {
             float yOff = -10f - i * 20f;
@@ -128,14 +144,14 @@ public class MapView : MonoBehaviour
         }
     }
 
-    // ── Static map drawing (deferred one frame for layout) ───────────────────
+    // ── Statik xəritə çizgisi (layout-dan 1 frame sonra) ────────────────────
 
     IEnumerator DrawAfterLayout()
     {
         yield return null;
         DrawGrid();
-        DrawStaticRoutes();
-        DrawCities();
+        DrawRoads();
+        DrawDistricts();
     }
 
     void DrawGrid()
@@ -149,62 +165,72 @@ public class MapView : MonoBehaviour
         }
     }
 
-    void DrawStaticRoutes()
+    void DrawRoads()
     {
         var col = new Color(0.50f, 0.35f, 0.12f, 0.55f);
-        for (int i = 0; i < Cities.Length - 1; i++)
-            CreateLine(_staticRouteLayer, Cities[i].UV, Cities[i + 1].UV, col, 2f);
+        foreach (var (a, b) in Roads)
+            CreateLine(_roadLayer, Districts[a].UV, Districts[b].UV, col, 2f);
     }
 
-    void DrawCities()
+    void DrawDistricts()
     {
         var r = _panel.rect;
-        foreach (var city in Cities)
+        foreach (var d in Districts)
         {
-            var pos = UVToLocal(city.UV, r);
+            var pos = UVToLocal(d.UV, r);
 
-            var dot = new GameObject(city.Name);
-            dot.transform.SetParent(_cityLayer, false);
-            dot.AddComponent<Image>().color = new Color(0.95f, 0.82f, 0.32f);
+            // Bao'an anbarı üçün fərqli rəng
+            bool isWarehouse = d.Name.Contains("Anbar");
+            var dotColor = isWarehouse
+                ? new Color(0.3f, 0.85f, 1.0f)      // mavi — anbar
+                : new Color(0.95f, 0.82f, 0.32f);    // qızılı — hədəf rayon
+
+            var dot = new GameObject(d.Name);
+            dot.transform.SetParent(_districtLayer, false);
+            dot.AddComponent<Image>().color = dotColor;
             var dRT = dot.GetComponent<RectTransform>();
             dRT.anchorMin = dRT.anchorMax = new Vector2(0.5f, 0.5f);
             dRT.pivot     = new Vector2(0.5f, 0.5f);
             dRT.anchoredPosition = pos;
-            dRT.sizeDelta        = new Vector2(9f, 9f);
+            dRT.sizeDelta        = isWarehouse ? new Vector2(12f, 12f) : new Vector2(9f, 9f);
 
-            var lbl = new GameObject(city.Name + "_lbl");
-            lbl.transform.SetParent(_cityLayer, false);
+            var lbl = new GameObject(d.Name + "_lbl");
+            lbl.transform.SetParent(_districtLayer, false);
             var t = lbl.AddComponent<Text>();
-            t.text      = city.Name;
+            t.text      = d.Name;
             t.fontSize  = 10;
-            t.color     = new Color(0.88f, 0.78f, 0.55f);
+            t.color     = isWarehouse
+                ? new Color(0.5f, 0.9f, 1.0f)
+                : new Color(0.88f, 0.78f, 0.55f);
             t.font      = GetBuiltinFont();
             t.alignment = TextAnchor.LowerLeft;
             var lRT = t.rectTransform;
             lRT.anchorMin = lRT.anchorMax = new Vector2(0.5f, 0.5f);
             lRT.pivot     = new Vector2(0f, 0f);
             lRT.anchoredPosition = pos + new Vector2(7f, 3f);
-            lRT.sizeDelta        = new Vector2(110f, 18f);
+            lRT.sizeDelta        = new Vector2(120f, 18f);
         }
     }
 
-    // ── Order animation ──────────────────────────────────────────────────────
+    // ── Sifariş animasiyası ──────────────────────────────────────────────────
 
     void OnOrderCreated(Order order)
     {
         if (_panel.rect.width < 1f) return;
 
-        int dest = Random.Range(1, Cities.Length);
+        // Hədəf: Bao'an-dan (0) başqa istənilən rayon
+        int dest = Random.Range(1, Districts.Length);
 
         var lines = new List<GameObject>();
-        for (int i = 0; i < dest; i++)
-            lines.Add(CreateLine(_activeRouteLayer, Cities[i].UV, Cities[i + 1].UV,
-                                 new Color(0.95f, 0.80f, 0.28f, 0.65f), 2.5f));
+        var path = BuildPath(dest);
+        for (int i = 0; i < path.Length - 1; i++)
+            lines.Add(CreateLine(_activeRouteLayer, path[i], path[i + 1],
+                                 new Color(0.95f, 0.80f, 0.28f, 0.55f), 2f));
         _routeLines[order.Id] = lines;
 
         var vGO = new GameObject($"V{order.Id}");
         vGO.transform.SetParent(_vehicleLayer, false);
-        vGO.AddComponent<Image>().color = TypeColors[(int)order.Type];
+        vGO.AddComponent<Image>().color = TypeColors[(int)DeliveryType.Courier]; // default kuryer rəngi
         var vRT = vGO.GetComponent<RectTransform>();
         vRT.anchorMin = vRT.anchorMax = new Vector2(0.5f, 0.5f);
         vRT.pivot     = new Vector2(0.5f, 0.5f);
@@ -212,6 +238,12 @@ public class MapView : MonoBehaviour
         _vehicles[order.Id] = vGO;
 
         StartCoroutine(AnimateVehicle(order.Id, dest, order.DeadlineSeconds));
+    }
+
+    void UpdateVehicleColor(int orderId, int typeIndex)
+    {
+        if (_vehicles.TryGetValue(orderId, out var vehicle))
+            vehicle.GetComponent<Image>().color = TypeColors[typeIndex];
     }
 
     IEnumerator AnimateVehicle(int orderId, int destIdx, float duration)
@@ -233,11 +265,11 @@ public class MapView : MonoBehaviour
 
     void RemoveOrder(int id)
     {
-        if (_vehicles.TryGetValue(id, out var v))   { Destroy(v); _vehicles.Remove(id); }
+        if (_vehicles.TryGetValue(id, out var v))    { Destroy(v); _vehicles.Remove(id); }
         if (_routeLines.TryGetValue(id, out var ls)) { foreach (var l in ls) Destroy(l); _routeLines.Remove(id); }
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────────
+    // ── Köməkçi metodlar ─────────────────────────────────────────────────────
 
     GameObject CreateLine(Transform parent, Vector2 uvA, Vector2 uvB, Color color, float thickness)
     {
@@ -269,10 +301,11 @@ public class MapView : MonoBehaviour
         return go.transform;
     }
 
+    // Anbardan (index 0) hədəf rayona qədər yolu tap
     static Vector2[] BuildPath(int destIdx)
     {
         var pts = new Vector2[destIdx + 1];
-        for (int i = 0; i <= destIdx; i++) pts[i] = Cities[i].UV;
+        for (int i = 0; i <= destIdx; i++) pts[i] = Districts[i].UV;
         return pts;
     }
 
