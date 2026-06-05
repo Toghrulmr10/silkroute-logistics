@@ -23,6 +23,7 @@ public class Order
 
     public string AssignedRobotId   = "";
     public string AssignedDroneId   = "";
+    public string AssignedDroneId2  = "";   // 2× Dron metodu üçün ikinci dron
     public string AssignedCourierId = "";
 
     public Order(int id, string customer, string product, float weight, float distance,

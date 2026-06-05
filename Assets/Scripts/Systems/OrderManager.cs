@@ -128,7 +128,7 @@ public class OrderManager : MonoBehaviour
         {
             DeliveryMethod.RobotDrone  => WarehouseSystem.Instance.TryAssignRobotDrone(order),
             DeliveryMethod.CourierOnly => WarehouseSystem.Instance.TryAssignCourier(order),
-            DeliveryMethod.TwoDrones   => WarehouseSystem.Instance.TryAssignRobotDrone(order),
+            DeliveryMethod.TwoDrones   => WarehouseSystem.Instance.TryAssignTwoDrones(order),
             _                          => false
         };
 

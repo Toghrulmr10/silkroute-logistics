@@ -47,12 +47,15 @@ public class RouteAI : MonoBehaviour
         for (int i = 1; i < Mathf.Min(plans.Count, 3); i++)
             alts.Add(plans[i]);
 
+        bool aiActive = CampaignManager.Instance == null || CampaignManager.Instance.RouteAiActive;
+
         var rec = new Recommendation
         {
             OrderId      = order.Id,
             Order        = order,
             Recommended  = plans.Count > 0 ? plans[0] : null,
-            Alternatives = alts.ToArray()
+            Alternatives = alts.ToArray(),
+            AiActive     = aiActive
         };
 
         Debug.Log($"[ROUTE] ORD-{order.Id} → {plans.Count} plan. Tövsiyə: {rec.Recommended?.MethodLabel}");

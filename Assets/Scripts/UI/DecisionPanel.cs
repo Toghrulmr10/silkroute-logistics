@@ -9,6 +9,7 @@ public class DecisionPanel : MonoBehaviour
     private GameObject           _root;
     private Text                 _titleText;
     private Text                 _infoText;
+    private Text                 _routeLabel;
     private Transform            _buttonContainer;
 
     private readonly Queue<Recommendation> _queue = new();
@@ -58,13 +59,25 @@ public class DecisionPanel : MonoBehaviour
         _infoText.text  = $"{o.ProductName}  |  {o.WeightKg:F1} kq  |  {o.DistanceKm:F1} km  |  " +
                           $"⏱ {o.DeadlineSeconds:F0}s  |  ¥{o.Revenue}  [{o.Priority}]";
 
+        // Başlıq: ROUTE AI yalnız aktiv olan günlərdə tövsiyə kimi təqdim olunur
+        if (rec.AiActive)
+        {
+            _routeLabel.text  = "★  ROUTE AI tövsiyəsi — plan seç:";
+            _routeLabel.color = new Color(0.85f, 0.75f, 0.3f);
+        }
+        else
+        {
+            _routeLabel.text  = "Çatdırılma üsulunu seç:  (ROUTE AI hələ aktiv deyil)";
+            _routeLabel.color = new Color(0.7f, 0.7f, 0.7f);
+        }
+
         // Köhnə düymələri sil
         foreach (Transform child in _buttonContainer)
             Destroy(child.gameObject);
 
-        // Tövsiyə düyməsi
+        // Tövsiyə düyməsi — yalnız AI aktivdirsə vurğulanır
         if (rec.Recommended != null)
-            AddPlanButton(rec, rec.Recommended, isRecommended: true);
+            AddPlanButton(rec, rec.Recommended, isRecommended: rec.AiActive);
 
         // Alternativlər
         foreach (var alt in rec.Alternatives)
@@ -172,7 +185,8 @@ public class DecisionPanel : MonoBehaviour
         // ROUTE etiketi
         var routeLabel = MakeText(card.transform, "★  ROUTE AI tövsiyəsi — plan seç:", 13,
                                    TextAnchor.MiddleLeft, new Color(0.85f, 0.75f, 0.3f));
-        var rLRT = routeLabel.GetComponent<Text>().rectTransform;
+        _routeLabel = routeLabel.GetComponent<Text>();
+        var rLRT = _routeLabel.rectTransform;
         rLRT.anchorMin = new Vector2(0, 1); rLRT.anchorMax = Vector2.one;
         rLRT.pivot     = new Vector2(0.5f, 1);
         rLRT.anchoredPosition = new Vector2(0, -58f);

@@ -67,6 +67,67 @@ public class DroneSystem : MonoBehaviour
         drone.CurrentOrderId = -1;
     }
 
+    // ── 2× Dron çatdırılması (redundans) ──────────────────────────────────────
+    public void LaunchTwoDroneDelivery(Order order)
+    {
+        Drone a = GameState.Instance.Drones.Find(d => d.Id == order.AssignedDroneId);
+        Drone b = GameState.Instance.Drones.Find(d => d.Id == order.AssignedDroneId2);
+        if (a == null || b == null)
+        {
+            Debug.LogWarning($"[DroneSystem] 2× dron tapılmadı — ORD-{order.Id}");
+            return;
+        }
+        StartCoroutine(TwoDroneFlight(order, a, b));
+    }
+
+    private IEnumerator TwoDroneFlight(Order order, Drone a, Drone b)
+    {
+        float weatherFactor = WeatherFactor(GameState.Instance.Weather);
+        float flightTimeSec = (order.DistanceKm / (a.SpeedKmh * weatherFactor)) * 60f;
+
+        float payloadOk    = order.WeightKg <= a.MaxPayloadKg ? 1f : 0f;
+        float singleProb   = 0.9f * weatherFactor * payloadOk;
+        // Redundans: yalnız hər iki dron uğursuz olarsa çatdırılma alınmır
+        float successProb  = (1f - (1f - singleProb) * (1f - singleProb)) * payloadOk;
+
+        order.Status = OrderStatus.InDelivery;
+        a.Status = DroneStatus.Loading;
+        b.Status = DroneStatus.Loading;
+        yield return new WaitForSeconds(1f);
+
+        a.Status = DroneStatus.InFlight;
+        b.Status = DroneStatus.InFlight;
+        EventBus.DroneLaunched(a, order);
+        Debug.Log($"[Drone] 2× ({a.Id}+{b.Id}) launched — ORD-{order.Id} | " +
+                  $"eta:{flightTimeSec:F1}s | success:{successProb:P0}");
+
+        yield return new WaitForSeconds(flightTimeSec);
+
+        bool success = Random.value <= successProb
+                       && flightTimeSec <= order.DeadlineSeconds;
+
+        a.Battery = Mathf.Clamp(a.Battery - a.RoundTripBatteryCost(order.DistanceKm), 0f, 100f);
+        b.Battery = Mathf.Clamp(b.Battery - b.RoundTripBatteryCost(order.DistanceKm), 0f, 100f);
+
+        // İkinci dronun əməliyyat xərci (birincisi EconomySystem tərəfindən tutulur)
+        GameState.Instance.SpendMoney(b.CreditPerTask);
+
+        EventBus.DroneDelivered(a, order, success);
+        Debug.Log($"[Drone] 2× → ORD-{order.Id} {(success ? "DELIVERED ✓" : "FAILED ✗")}");
+
+        a.Status = DroneStatus.Returning;
+        b.Status = DroneStatus.Returning;
+        yield return new WaitForSeconds(flightTimeSec * 0.8f);
+
+        a.Status = DroneStatus.Charging;
+        b.Status = DroneStatus.Charging;
+        StartCoroutine(ChargeCoroutine(b));
+        yield return StartCoroutine(ChargeCoroutine(a));
+
+        a.CurrentOrderId = -1;
+        b.CurrentOrderId = -1;
+    }
+
     private IEnumerator ChargeCoroutine(Drone drone)
     {
         while (drone.Battery < 100f)

@@ -15,6 +15,9 @@ public class CampaignManager : MonoBehaviour
 
     public bool GameActive { get; private set; }
 
+    // ROUTE AI yalnız 4-cü gündən tam tövsiyə panelini açır (campaign_days.json: routeAiActive)
+    public bool RouteAiActive => _currentDay != null && _currentDay.routeAiActive;
+
     void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }

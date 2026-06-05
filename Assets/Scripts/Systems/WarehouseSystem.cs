@@ -34,6 +34,30 @@ public class WarehouseSystem : MonoBehaviour
         return true;
     }
 
+    // 2× Dron metodu üçün iki dronun təyinatı (robot tələb olunmur — dronlar özü yüklənir)
+    public bool TryAssignTwoDrones(Order order)
+    {
+        var idles = GameState.Instance.Drones.FindAll(d => d.IsIdle && d.CurrentOrderId == -1);
+        if (idles.Count < 2)                     return false;
+        if (idles[0].MaxPayloadKg < order.WeightKg) return false;
+
+        Drone primary   = idles[0];
+        Drone secondary = idles[1];
+
+        order.AssignedDroneId  = primary.Id;
+        order.AssignedDroneId2 = secondary.Id;
+        order.Type = DeliveryType.Drone;
+
+        // Dərhal məşğul işarələ ki, başqa sifariş eyni dronları seçməsin
+        primary.Status   = DroneStatus.Loading;
+        secondary.Status = DroneStatus.Loading;
+        primary.CurrentOrderId   = order.Id;
+        secondary.CurrentOrderId = order.Id;
+
+        DroneSystem.Instance.LaunchTwoDroneDelivery(order);
+        return true;
+    }
+
     // Kuryer metodu üçün birbaşa çatdırılma
     public bool TryAssignCourier(Order order)
     {
