@@ -27,10 +27,27 @@ public class CampaignManager : MonoBehaviour
 
     void Start()
     {
-        var ta   = Resources.Load<TextAsset>("Data/campaign_days");
-        var list = JsonUtility.FromJson<DayConfigList>(ta.text);
-        _days = list.days;
-        Debug.Log($"[Campaign] {_days.Length} gün konfiqurasiyası yükləndi.");
+        // Kampaniya konfiqurasiyasını dayanıqlı yüklə — xəta menyunu bloklamamalıdır
+        try
+        {
+            var ta = Resources.Load<TextAsset>("Data/campaign_days");
+            if (ta == null)
+            {
+                Debug.LogError("[Campaign] 'Resources/Data/campaign_days' tapılmadı!");
+                _days = System.Array.Empty<DayConfig>();
+            }
+            else
+            {
+                var list = JsonUtility.FromJson<DayConfigList>(ta.text);
+                _days = list?.days ?? System.Array.Empty<DayConfig>();
+                Debug.Log($"[Campaign] {_days.Length} gün konfiqurasiyası yükləndi.");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[Campaign] Konfiqurasiya yükləmə xətası: {e}");
+            _days = System.Array.Empty<DayConfig>();
+        }
 
         EventBus.OnDayEnded       += OnDayEnded;
         EventBus.OnOrderDelivered += o => _deliveredToday++;
@@ -42,7 +59,16 @@ public class CampaignManager : MonoBehaviour
     private IEnumerator ShowMainMenuNextFrame()
     {
         yield return null; // bütün Start() metodları çalışsın
-        MainMenuPanel.Instance.Show(SaveSystem.Instance.HasSave());
+
+        if (MainMenuPanel.Instance == null)
+        {
+            Debug.LogError("[Campaign] MainMenuPanel.Instance null — menyu göstərilə bilmir!");
+            yield break;
+        }
+
+        bool hasSave = SaveSystem.Instance != null && SaveSystem.Instance.HasSave();
+        MainMenuPanel.Instance.Show(hasSave);
+        Debug.Log("[Campaign] Ana menyu göstərildi.");
     }
 
     // ── Oyun başlanğıcı ───────────────────────────────────────────────────────

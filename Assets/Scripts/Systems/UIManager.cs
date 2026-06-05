@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
     public Transform CanvasRoot { get; private set; }
 
+    GameObject _hudRoot;
     Text _moneyText;
     Text _dayText;
     Transform _orderContent;
@@ -28,8 +30,18 @@ public class UIManager : MonoBehaviour
         EventBus.OnOrderDelivered += _ => RefreshOrders();
         EventBus.OnOrderFailed    += _ => RefreshOrders();
 
+        // HUD yalnız oyun gedişində görünsün — menyu/oyun sonu zamanı gizlən
+        EventBus.OnDayStarted     += (_, __) => SetHudVisible(true);
+        EventBus.OnGameWon        += ()      => SetHudVisible(false);
+        EventBus.OnGameLost       += _       => SetHudVisible(false);
+
         _moneyText.text = $"¥{GameState.Instance.Money:N0}";
         _dayText.text   = $"Day {GameState.Instance.Day}";
+    }
+
+    void SetHudVisible(bool visible)
+    {
+        if (_hudRoot != null) _hudRoot.SetActive(visible);
     }
 
     void RefreshOrders()
@@ -63,6 +75,9 @@ public class UIManager : MonoBehaviour
 
     void BuildUI()
     {
+        // UI inputu üçün EventSystem (səhnədə yoxdursa yarat) — düymələrin işləməsi üçün şərt
+        EnsureEventSystem();
+
         // Canvas
         var cvsGO = new GameObject("GameCanvas");
         DontDestroyOnLoad(cvsGO);
@@ -75,7 +90,14 @@ public class UIManager : MonoBehaviour
         scaler.referenceResolution = new Vector2(1080, 1920);
         scaler.matchWidthOrHeight  = 1f;
         cvsGO.AddComponent<GraphicRaycaster>();
-        var root = cvsGO.transform;
+
+        // HUD konteyneri — başlanğıcda gizli, yalnız oyun başlayanda görünür
+        _hudRoot = new GameObject("HUDRoot");
+        _hudRoot.transform.SetParent(cvsGO.transform, false);
+        var hudRT = _hudRoot.AddComponent<RectTransform>();
+        hudRT.anchorMin = Vector2.zero; hudRT.anchorMax = Vector2.one;
+        hudRT.offsetMin = hudRT.offsetMax = Vector2.zero;
+        var root = _hudRoot.transform;
 
         // ── Top HUD bar ─────────────────────────────────────────────────────────
         var topBar = MakePanel(root, "TopBar", new Color(0.08f, 0.08f, 0.12f, 0.92f));
@@ -137,6 +159,23 @@ public class UIManager : MonoBehaviour
         vlg.childForceExpandWidth = true;
         vlg.spacing             = 4;
         _orderContent = contentGO.transform;
+
+        _hudRoot.SetActive(false); // menyu açılışında gizli qalsın
+    }
+
+    // Səhnədə EventSystem yoxdursa yarat — yeni Input System üçün düzgün modul ilə
+    static void EnsureEventSystem()
+    {
+        if (FindFirstObjectByType<EventSystem>() != null) return;
+
+        var es = new GameObject("EventSystem");
+        DontDestroyOnLoad(es);
+        es.AddComponent<EventSystem>();
+#if ENABLE_INPUT_SYSTEM
+        es.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
+#else
+        es.AddComponent<StandaloneInputModule>();
+#endif
     }
 
     static RectTransform MakePanel(Transform parent, string name, Color color)
