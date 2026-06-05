@@ -163,6 +163,18 @@ public class UIManager : MonoBehaviour
         _hudRoot.SetActive(false); // menyu açılışında gizli qalsın
     }
 
+    // Modal paneli öz Canvas-ı ilə ən üstə qaldır — MapPanel/HUD sibling sırasından asılı olmasın
+    public static void PromoteToOverlay(GameObject root, int sortingOrder)
+    {
+        if (root == null) return;
+        var c = root.GetComponent<Canvas>();
+        if (c == null) c = root.AddComponent<Canvas>();
+        c.overrideSorting = true;
+        c.sortingOrder    = sortingOrder;
+        if (root.GetComponent<GraphicRaycaster>() == null)
+            root.AddComponent<GraphicRaycaster>();
+    }
+
     // Səhnədə EventSystem yoxdursa yarat — yeni Input System üçün düzgün modul ilə
     static void EnsureEventSystem()
     {

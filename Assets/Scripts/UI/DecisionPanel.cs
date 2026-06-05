@@ -40,6 +40,7 @@ public class DecisionPanel : MonoBehaviour
         if (_queue.Count == 0) { _showing = false; _root.SetActive(false); return; }
         _showing = true;
         Populate(_queue.Dequeue());
+        UIManager.PromoteToOverlay(_root, 50); // xəritənin üstündə
         _root.transform.SetAsLastSibling(); // hər zaman ən üstdə olsun
         _root.SetActive(true);
     }

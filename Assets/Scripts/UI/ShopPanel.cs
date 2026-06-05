@@ -26,6 +26,7 @@ public class ShopPanel : MonoBehaviour
     public void Show()
     {
         RefreshItems();
+        UIManager.PromoteToOverlay(_root, 60);
         _root.SetActive(true);
         _root.transform.SetAsLastSibling();
     }

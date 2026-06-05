@@ -32,6 +32,7 @@ public class GameOverPanel : MonoBehaviour
             $"Son kredit:     ¥{GameState.Instance.Money:N0}\n" +
             $"Reputasiya:    {GameState.Instance.Reputation}/100\n\n" +
             "SilkRoute Logistics — tam avtomatlaşma\nmüasir dövrün tələbidir.";
+        UIManager.PromoteToOverlay(_root, 70);
         _root.SetActive(true);
         _root.transform.SetAsLastSibling();
     }
@@ -46,6 +47,7 @@ public class GameOverPanel : MonoBehaviour
             $"Kredit:         ¥{GameState.Instance.Money:N0}\n" +
             $"Reputasiya:    {GameState.Instance.Reputation}/100\n\n" +
             "Uyğunlaşmayanlar\nbazarda sağ qala bilmir.";
+        UIManager.PromoteToOverlay(_root, 70);
         _root.SetActive(true);
         _root.transform.SetAsLastSibling();
     }

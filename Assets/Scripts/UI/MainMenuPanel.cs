@@ -25,6 +25,7 @@ public class MainMenuPanel : MonoBehaviour
             _continueBtn.GetComponentInChildren<Text>().color = hasSave
                 ? Color.white : new Color(0.5f, 0.5f, 0.5f);
         }
+        UIManager.PromoteToOverlay(_root, 100); // hər şeyin üstündə
         _root.SetActive(true);
         _root.transform.SetAsLastSibling();
     }

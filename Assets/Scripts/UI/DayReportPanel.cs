@@ -36,6 +36,7 @@ public class DayReportPanel : MonoBehaviour
 
         RefreshStars(s.Stars);
 
+        UIManager.PromoteToOverlay(_root, 60);
         _root.SetActive(true);
         _root.transform.SetAsLastSibling();
     }
