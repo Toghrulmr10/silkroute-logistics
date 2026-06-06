@@ -129,17 +129,31 @@ public class UIManager : MonoBehaviour
         topBar.anchoredPosition = Vector2.zero;
         topBar.sizeDelta        = new Vector2(0, 56);
 
-        // Day label — left half
-        _dayText = MakeText(topBar, "Day 1", 22, TextAnchor.MiddleLeft);
+        // Day label — sol 1/4
+        _dayText = MakeText(topBar, "Day 1", 18, TextAnchor.MiddleLeft);
         var dt = _dayText.rectTransform;
-        dt.anchorMin = new Vector2(0, 0); dt.anchorMax = new Vector2(0.5f, 1);
-        dt.offsetMin = new Vector2(24, 0); dt.offsetMax = Vector2.zero;
+        dt.anchorMin = new Vector2(0f,    0); dt.anchorMax = new Vector2(0.25f, 1);
+        dt.offsetMin = new Vector2(12, 0); dt.offsetMax = Vector2.zero;
 
-        // Money label — right half
-        _moneyText = MakeText(topBar, "¥5,000", 22, TextAnchor.MiddleRight);
+        // Money label — sol 2/4
+        _moneyText = MakeText(topBar, "¥500", 18, TextAnchor.MiddleCenter);
         var mt = _moneyText.rectTransform;
-        mt.anchorMin = new Vector2(0.5f, 0); mt.anchorMax = Vector2.one;
-        mt.offsetMin = Vector2.zero; mt.offsetMax = new Vector2(-24, 0);
+        mt.anchorMin = new Vector2(0.25f, 0); mt.anchorMax = new Vector2(0.5f, 1);
+        mt.offsetMin = mt.offsetMax = Vector2.zero;
+
+        // Reputation — sağ 3/4
+        _repText = MakeText(topBar, "★ 50", 18, TextAnchor.MiddleCenter);
+        _repText.color = new Color(0.9f, 0.8f, 0.2f);
+        var rt2 = _repText.rectTransform;
+        rt2.anchorMin = new Vector2(0.5f,  0); rt2.anchorMax = new Vector2(0.75f, 1);
+        rt2.offsetMin = rt2.offsetMax = Vector2.zero;
+
+        // Energy — ən sağ 4/4
+        _energyText = MakeText(topBar, "⚡100", 18, TextAnchor.MiddleCenter);
+        _energyText.color = new Color(0.3f, 0.85f, 1f);
+        var et = _energyText.rectTransform;
+        et.anchorMin = new Vector2(0.75f, 0); et.anchorMax = new Vector2(1f, 1);
+        et.offsetMin = Vector2.zero; et.offsetMax = new Vector2(-8, 0);
 
         // ── Orders panel (right side) ────────────────────────────────────────────
         var orders = MakePanel(root, "OrdersPanel", new Color(0.05f, 0.05f, 0.08f, 0.88f));
