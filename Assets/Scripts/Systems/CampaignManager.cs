@@ -60,6 +60,8 @@ public class CampaignManager : MonoBehaviour
     {
         yield return null; // bütün Start() metodları çalışsın
 
+        if (GameActive) yield break; // StartNewGame/ContinueGame already called before coroutine ran
+
         if (MainMenuPanel.Instance == null)
         {
             Debug.LogError("[Campaign] MainMenuPanel.Instance null — menyu göstərilə bilmir!");
