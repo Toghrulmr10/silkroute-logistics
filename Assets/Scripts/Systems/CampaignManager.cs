@@ -146,7 +146,15 @@ public class CampaignManager : MonoBehaviour
     private void WinGame()
     {
         SaveSystem.Instance.DeleteSave();
-        EventBus.GameWon();
+        bool trueWin = GameState.Instance.Reputation >= 70
+                    && GameState.Instance.Money      >= 1000f;
+        if (trueWin)
+            EventBus.GameWon();
+        else
+            EventBus.GameLost(
+                "7 günü tamamladınız, lakin hədəfə çatmadınız.\n" +
+                $"Rep: {GameState.Instance.Reputation}/100 (lazım: 70+)\n" +
+                $"Kredit: ¥{GameState.Instance.Money:N0} (lazım: ¥1,000+)");
     }
 
     // ── Gün xülasəsi ──────────────────────────────────────────────────────────
