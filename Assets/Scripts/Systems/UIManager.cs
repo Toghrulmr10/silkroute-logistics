@@ -26,8 +26,10 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        EventBus.OnMoneyChanged   += m => _moneyText.text = $"¥{m:N0}";
-        EventBus.OnDayChanged     += d => _dayText.text   = $"Day {d}";
+        EventBus.OnMoneyChanged      += m => _moneyText.text = $"¥{m:N0}";
+        EventBus.OnDayChanged        += d => _dayText.text   = $"Day {d}";
+        EventBus.OnReputationChanged += (v, _) => RefreshRepText(v);
+        EventBus.OnEnergyChanged     += (v, _) => RefreshEnergyText(v);
         EventBus.OnOrderCreated   += _ => RefreshOrders();
         EventBus.OnOrderDelivered += _ => RefreshOrders();
         EventBus.OnOrderFailed    += _ => RefreshOrders();
