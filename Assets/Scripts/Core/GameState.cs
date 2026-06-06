@@ -199,7 +199,7 @@ public class GameState : MonoBehaviour
     }
 
     // ── Resurs axtarışı ───────────────────────────────────────────────────────
-    public Robot   GetIdleRobot()   => Robots.Find(r => r.IsIdle && r.CurrentOrderId == -1);
+    public Robot   GetIdleRobot()   => Energy > 0 ? Robots.Find(r => r.IsIdle && r.CurrentOrderId == -1) : null;
     public Drone   GetIdleDrone()   => Drones.Find(d => d.IsIdle && d.CurrentOrderId == -1);
     public Courier GetIdleCourier() => Couriers.Find(c => c.IsIdle && c.CurrentOrderId == -1);
 }
