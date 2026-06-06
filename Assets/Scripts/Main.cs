@@ -46,7 +46,6 @@ public static class Main
         CreateSingleton<ShopPanel>("ShopPanel");
         CreateSingleton<GameOverPanel>("GameOverPanel");
 
-        FixCamera();
         SubscribeDebugListeners();
 
         Debug.Log("[SilkRoute] Sprint 5 bootstrap tamamlandı — Kampaniya + Mağaza + Save aktiv.");
