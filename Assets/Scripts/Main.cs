@@ -14,12 +14,6 @@ public static class Main
             cam.clearFlags       = CameraClearFlags.SolidColor;
             Debug.Log("[Fix] Kamera Orthographic edildi.");
         }
-        if (UIManager.Instance == null)
-            Debug.LogError("[FIX] UIManager.Instance NULL — singleton yaradılmadı!");
-        else if (UIManager.Instance.CanvasRoot == null)
-            Debug.LogError("[FIX] CanvasRoot NULL — BuildUI() çalışmadı!");
-        else
-            Debug.Log($"[Fix] CanvasRoot OK: {UIManager.Instance.CanvasRoot.name}, childCount={UIManager.Instance.CanvasRoot.childCount}");
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
