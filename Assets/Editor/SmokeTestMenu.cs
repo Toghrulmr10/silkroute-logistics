@@ -247,4 +247,52 @@ public static class SmokeTestMenu
         CampaignManager.Instance?.ProceedToNextDay();
         Debug.Log("[SmokeTest] ProceedToNextDay");
     }
+
+    // ── FINAL SMOKE TEST ITEMS ─────────────────────────────────────────────────
+    // Run these in order after Day 7 report: Load → Win → (new game) → Loss
+
+    [MenuItem("SmokeTest/Final 1 - Test Load")]
+    static void FinalTestLoad()
+    {
+        if (!Application.isPlaying) { Debug.LogWarning("[SmokeTest] Play mode!"); return; }
+        var ss = SaveSystem.Instance;
+        if (ss == null) { Debug.LogError("[SmokeTest LOAD] SaveSystem null"); return; }
+        bool hasSave = ss.HasSave();
+        Debug.Log($"[SmokeTest LOAD] HasSave={hasSave}");
+        if (hasSave)
+        {
+            var data = ss.Load();
+            Debug.Log($"[SmokeTest LOAD] ✓ money={data?.money} rep={data?.reputation} dayIdx={data?.campaignDayIndex} " +
+                      $"robots={data?.robotCount} drones={data?.droneCount}");
+        }
+    }
+
+    [MenuItem("SmokeTest/Final 2 - Trigger Win")]
+    static void FinalTriggerWin()
+    {
+        if (!Application.isPlaying) { Debug.LogWarning("[SmokeTest] Play mode!"); return; }
+        var gs = GameState.Instance;
+        Debug.Log($"[SmokeTest WIN] Pre-win state: Rep={gs?.Reputation} Money=¥{gs?.Money:N0} " +
+                  $"(need Rep>=70 + Money>=1000) → should WIN");
+        CampaignManager.Instance?.ProceedToNextDay();
+        Debug.Log("[SmokeTest WIN] ProceedToNextDay called — watch for [EVT] *** QALİB ***");
+    }
+
+    [MenuItem("SmokeTest/Final 3 - Test Loss Condition")]
+    static void FinalTestLoss()
+    {
+        if (!Application.isPlaying) { Debug.LogWarning("[SmokeTest] Play mode!"); return; }
+        var gs = GameState.Instance;
+        if (gs == null) { Debug.LogError("[SmokeTest LOSS] GameState null"); return; }
+        // Start fresh game, drop rep below threshold, trigger day end
+        CampaignManager.Instance?.StartNewGame();
+        // Drop reputation to 5 (below loss threshold of 10)
+        var f = typeof(GameState).GetField("_reputation",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (f != null) f.SetValue(gs, 5);
+        else gs.ChangeReputation(-100); // fallback
+        Debug.Log($"[SmokeTest LOSS] Rep forced to {gs.Reputation} — firing DayEnded");
+        EventBus.DayEnded(gs.Day);
+        Debug.Log("[SmokeTest LOSS] DayEnded fired — watch for [EVT] *** UDUZDU ***");
+    }
 }
