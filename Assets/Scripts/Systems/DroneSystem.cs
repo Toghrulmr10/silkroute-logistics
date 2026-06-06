@@ -48,8 +48,10 @@ public class DroneSystem : MonoBehaviour
 
         yield return new WaitForSeconds(flightTimeSec);
 
+        // Sifariş yaradılandan bəri keçən MƏCMU vaxt (robot prep + yüklənmə + uçuş)
+        float totalElapsed = TimeSystem.Instance.GameTimeSeconds - order.CreatedAt;
         bool success = Random.value <= successProb
-                       && flightTimeSec <= order.DeadlineSeconds;
+                       && totalElapsed <= order.DeadlineSeconds;
 
         // Batareya azalt
         drone.Battery = Mathf.Clamp(drone.Battery - batteryCost, 0f, 100f);
