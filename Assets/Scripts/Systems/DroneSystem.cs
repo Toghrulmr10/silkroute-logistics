@@ -133,11 +133,16 @@ public class DroneSystem : MonoBehaviour
 
     private IEnumerator ChargeCoroutine(Drone drone)
     {
-        while (drone.Battery < 100f)
+        float elapsed = 0f;
+        // 120 saniyə timeout — sonsuz döngüdən qoruyur
+        while (drone.Battery < 100f && elapsed < 120f)
         {
-            drone.Battery = Mathf.Min(drone.Battery + Drone.ChargeRatePerSec * Time.deltaTime, 100f);
+            float dt = Time.deltaTime;
+            drone.Battery = Mathf.Min(drone.Battery + Drone.ChargeRatePerSec * dt, 100f);
+            elapsed += dt;
             yield return null;
         }
+        drone.Battery = 100f;
         drone.Status = DroneStatus.Idle;
         Debug.Log($"[Drone] {drone.Id} fully charged — idle");
     }
