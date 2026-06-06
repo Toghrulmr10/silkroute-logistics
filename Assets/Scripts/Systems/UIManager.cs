@@ -82,8 +82,8 @@ public class UIManager : MonoBehaviour
         // Canvas
         var cvsGO = new GameObject("GameCanvas");
         DontDestroyOnLoad(cvsGO);
-        CanvasRoot = cvsGO.transform;
-        var canvas = cvsGO.AddComponent<Canvas>();
+        var canvas = cvsGO.AddComponent<Canvas>(); // Canvas əvvəl → RectTransform yaranır
+        CanvasRoot = cvsGO.transform;              // İndi referans RectTransform-ə işarə edir
         canvas.renderMode  = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 10;
         var scaler = cvsGO.AddComponent<CanvasScaler>();
