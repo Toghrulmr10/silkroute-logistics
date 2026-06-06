@@ -147,6 +147,17 @@ public class DroneSystem : MonoBehaviour
         Debug.Log($"[Drone] {drone.Id} fully charged — idle");
     }
 
+    public void StopDay()
+    {
+        StopAllCoroutines();
+        foreach (var d in GameState.Instance.Drones)
+        {
+            d.Status        = DroneStatus.Idle;
+            d.CurrentOrderId = -1;
+        }
+        Debug.Log("[DroneSystem] Gün dayandırıldı — bütün dronlar sıfırlandı");
+    }
+
     private static float WeatherFactor(string weather) => weather switch
     {
         "windy" => 0.85f,
