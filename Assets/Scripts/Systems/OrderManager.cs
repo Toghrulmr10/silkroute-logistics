@@ -37,6 +37,7 @@ public class OrderManager : MonoBehaviour
     // ── Gün idarəetməsi ───────────────────────────────────────────────────────
     public void StartDay(int orderCount)
     {
+        _nextId         = 1;  // hər yeni oyunda ID sıfırlanır
         _maxOrdersToday = orderCount;
         _spawnedToday   = 0;
         _dayActive      = true;
@@ -49,6 +50,8 @@ public class OrderManager : MonoBehaviour
     {
         _dayActive = false;
         StopAllCoroutines();
+        WarehouseSystem.Instance.StopDay();
+        DroneSystem.Instance.StopDay();
     }
 
     // ── Spawn döngəsi ────────────────────────────────────────────────────────
