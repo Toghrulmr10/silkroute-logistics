@@ -76,6 +76,7 @@ public class RouteAI : MonoBehaviour
         float batCost    = drone.RoundTripBatteryCost(order.DistanceKm);
         float batFactor  = drone.Battery >= batCost * 2f ? 1f : 0.7f;
         float success    = 0.9f * wf * batFactor;
+        if (GameState.Instance.RouteUpgraded) success = Mathf.Min(success + 0.08f, 1f);
         float estTime    = prep + flight;
 
         return new RecommendationPlan
