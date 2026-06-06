@@ -11,6 +11,8 @@ public class UIManager : MonoBehaviour
     GameObject _hudRoot;
     Text _moneyText;
     Text _dayText;
+    Text _repText;
+    Text _energyText;
     Transform _orderContent;
     readonly List<GameObject> _orderRows = new();
 
