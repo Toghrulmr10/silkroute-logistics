@@ -71,7 +71,7 @@ public static class SmokeTestMenu
         Debug.Log($"[SmokeTest STATE] Day={gs?.Day} Money=¥{gs?.Money:N0} Rep={gs?.Reputation} Energy={gs?.Energy} " +
                   $"GameActive={CampaignManager.Instance?.GameActive} MenuVisible={menuVisible} TimeScale={Time.timeScale} " +
                   $"GameTimeSec={gameTime:F1} ActiveOrders={activeOrders} " +
-                  $"TS_running={tsRunning} deltaTime={Time.deltaTime:F4} runInBg={Application.runInBackground}");
+                  $"TS_running={tsRunning} deltaTime={Time.deltaTime:F4} runInBg={Application.runInBackground} frame={Time.frameCount}");
     }
 
     [MenuItem("SmokeTest/Set TimeScale 4")]
