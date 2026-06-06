@@ -125,8 +125,9 @@ public class WarehouseSystem : MonoBehaviour
 
         yield return new WaitForSeconds(deliveryTime);
 
+        float totalElapsed = TimeSystem.Instance.GameTimeSeconds - order.CreatedAt;
         bool success = Random.value <= courier.SuccessRate
-                       && deliveryTime <= order.DeadlineSeconds;
+                       && totalElapsed <= order.DeadlineSeconds;
 
         courier.Status = CourierStatus.Idle;
         courier.CurrentOrderId = -1;
