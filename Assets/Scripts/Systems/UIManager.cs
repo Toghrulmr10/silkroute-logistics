@@ -41,6 +41,8 @@ public class UIManager : MonoBehaviour
 
         _moneyText.text = $"¥{GameState.Instance.Money:N0}";
         _dayText.text   = $"Day {GameState.Instance.Day}";
+        RefreshRepText(GameState.Instance.Reputation);
+        RefreshEnergyText(GameState.Instance.Energy);
     }
 
     void SetHudVisible(bool visible)
