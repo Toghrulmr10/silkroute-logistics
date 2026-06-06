@@ -57,6 +57,7 @@ public class MapView : MonoBehaviour
     {
         BuildPanel(UIManager.Instance.CanvasRoot);
 
+        EventBus.OnDayStarted     += (_, __) => _panel.gameObject.SetActive(true);
         EventBus.OnOrderCreated   += OnOrderCreated;
         EventBus.OnOrderDelivered += o => RemoveOrder(o.Id);
         EventBus.OnOrderFailed    += o => RemoveOrder(o.Id);
