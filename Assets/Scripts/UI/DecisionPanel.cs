@@ -170,9 +170,9 @@ public class DecisionPanel : MonoBehaviour
         card.transform.SetParent(_root.transform, false);
         card.AddComponent<Image>().color = new Color(0.08f, 0.11f, 0.10f, 0.98f);
         var cRT = card.GetComponent<RectTransform>();
-        cRT.anchorMin = cRT.anchorMax = new Vector2(0.5f, 0.5f);
-        cRT.pivot     = new Vector2(0.5f, 0.5f);
-        cRT.sizeDelta = new Vector2(720f, 480f);
+        cRT.anchorMin = new Vector2(0.04f, 0.12f);
+        cRT.anchorMax = new Vector2(0.96f, 0.88f);
+        cRT.offsetMin = cRT.offsetMax = Vector2.zero;
 
         // Başlıq
         var titleGO = MakeText(card.transform, "", 18, TextAnchor.UpperCenter, Color.white);
