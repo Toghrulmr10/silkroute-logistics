@@ -61,9 +61,17 @@ public static class SmokeTestMenu
         }
         float gameTime = TimeSystem.Instance != null ? TimeSystem.Instance.GameTimeSeconds : -1f;
         int activeOrders = OrderManager.Instance?.ActiveOrders?.Count ?? -1;
+        bool tsRunning = false;
+        if (TimeSystem.Instance != null)
+        {
+            var f = typeof(TimeSystem).GetField("_running",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (f != null) tsRunning = (bool)f.GetValue(TimeSystem.Instance);
+        }
         Debug.Log($"[SmokeTest STATE] Day={gs?.Day} Money=¥{gs?.Money:N0} Rep={gs?.Reputation} Energy={gs?.Energy} " +
                   $"GameActive={CampaignManager.Instance?.GameActive} MenuVisible={menuVisible} TimeScale={Time.timeScale} " +
-                  $"GameTimeSec={gameTime:F1} ActiveOrders={activeOrders}");
+                  $"GameTimeSec={gameTime:F1} ActiveOrders={activeOrders} " +
+                  $"TS_running={tsRunning} deltaTime={Time.deltaTime:F4} runInBg={Application.runInBackground}");
     }
 
     [MenuItem("SmokeTest/Set TimeScale 4")]
