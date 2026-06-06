@@ -48,6 +48,24 @@ public class UIManager : MonoBehaviour
         if (_hudRoot != null) _hudRoot.SetActive(visible);
     }
 
+    void RefreshRepText(int v)
+    {
+        if (_repText == null) return;
+        _repText.text  = $"★ {v}";
+        _repText.color = v >= 70 ? new Color(0.3f, 1f, 0.4f)
+                       : v >= 40 ? new Color(0.9f, 0.8f, 0.2f)
+                                 : new Color(1f, 0.35f, 0.35f);
+    }
+
+    void RefreshEnergyText(int v)
+    {
+        if (_energyText == null) return;
+        _energyText.text  = $"⚡{v}";
+        _energyText.color = v >= 50 ? new Color(0.3f, 0.85f, 1f)
+                          : v >= 20 ? new Color(0.9f, 0.7f, 0.2f)
+                                    : new Color(1f, 0.35f, 0.35f);
+    }
+
     void RefreshOrders()
     {
         foreach (var r in _orderRows) Destroy(r);
