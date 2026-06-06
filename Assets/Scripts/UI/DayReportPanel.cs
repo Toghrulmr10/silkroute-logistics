@@ -68,7 +68,7 @@ public class DayReportPanel : MonoBehaviour
         oRT.offsetMin = oRT.offsetMax = Vector2.zero;
 
         // Kart
-        var card = MakePanel(_root.transform, new Color(0.07f, 0.10f, 0.09f, 0.98f), new Vector2(640f, 500f));
+        var card = MakePanel(_root.transform, new Color(0.07f, 0.10f, 0.09f, 0.98f), new Vector2(900f, 560f));
 
         // Başlıq
         _titleText = MakeText(card, "", 20, new Color(0.9f, 0.75f, 0.25f), FontStyle.Bold);
