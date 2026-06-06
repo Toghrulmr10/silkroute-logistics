@@ -59,8 +59,11 @@ public static class SmokeTestMenu
                 menuVisible = root != null && root.activeSelf;
             }
         }
+        float gameTime = TimeSystem.Instance != null ? TimeSystem.Instance.GameTimeSeconds : -1f;
+        int activeOrders = OrderManager.Instance?.ActiveOrders?.Count ?? -1;
         Debug.Log($"[SmokeTest STATE] Day={gs?.Day} Money=¥{gs?.Money:N0} Rep={gs?.Reputation} Energy={gs?.Energy} " +
-                  $"GameActive={CampaignManager.Instance?.GameActive} MenuVisible={menuVisible} TimeScale={Time.timeScale}");
+                  $"GameActive={CampaignManager.Instance?.GameActive} MenuVisible={menuVisible} TimeScale={Time.timeScale} " +
+                  $"GameTimeSec={gameTime:F1} ActiveOrders={activeOrders}");
     }
 
     [MenuItem("SmokeTest/Set TimeScale 4")]
