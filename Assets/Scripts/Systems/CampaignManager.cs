@@ -106,9 +106,12 @@ public class CampaignManager : MonoBehaviour
         if (_currentDay.unlockRobot) GameState.Instance.UnlockRobot();
         if (_currentDay.unlockDrone) GameState.Instance.UnlockDrone();
 
-        // Reputasiya yüksəkdirsə daha çox sifariş gəlir (GDD §5)
+        // Reputasiyaya görə addım-cədvəl (GDD §5 Rep→Order table)
         int rep = GameState.Instance.Reputation;
-        float repMult = Mathf.Clamp(0.7f + rep * 0.006f, 0.7f, 1.4f);
+        float repMult = rep < 31  ? 0.6f
+                      : rep < 61  ? 1.0f
+                      : rep < 86  ? 1.3f
+                                  : 1.5f;
         int adjustedOrders = Mathf.Max(1, Mathf.RoundToInt(_currentDay.orderCount * repMult));
         OrderManager.Instance.StartDay(adjustedOrders);
         TimeSystem.Instance.StartDay();
