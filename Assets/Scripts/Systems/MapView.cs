@@ -76,6 +76,7 @@ public class MapView : MonoBehaviour
         var go = new GameObject("MapPanel");
         go.transform.SetParent(canvasRoot, false);
         go.AddComponent<Image>().color = new Color(0.07f, 0.09f, 0.07f, 1f);
+        go.SetActive(false); // yalnız oyun başlayanda göstər
 
         _panel = go.GetComponent<RectTransform>();
         _panel.anchorMin = Vector2.zero;
