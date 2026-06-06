@@ -116,7 +116,6 @@ public class GameOverPanel : MonoBehaviour
 
     private static Font GetFont()
     {
-        var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        return f != null ? f : Resources.GetBuiltinResource<Font>("Arial.ttf");
+        return UIFont.Get();
     }
 }
