@@ -38,3 +38,7 @@ crashlytics-build.properties
 .vs/
 *.csproj
 *.sln
+
+# Debug screenshots (MCP-generated)
+Assets/Screenshots/*.png
+Assets/Screenshots/*.png.meta
