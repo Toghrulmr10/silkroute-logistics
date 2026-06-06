@@ -106,7 +106,11 @@ public class CampaignManager : MonoBehaviour
         if (_currentDay.unlockRobot) GameState.Instance.UnlockRobot();
         if (_currentDay.unlockDrone) GameState.Instance.UnlockDrone();
 
-        OrderManager.Instance.StartDay(_currentDay.orderCount);
+        // Reputasiya yüksəkdirsə daha çox sifariş gəlir (GDD §5)
+        int rep = GameState.Instance.Reputation;
+        float repMult = Mathf.Clamp(0.7f + rep * 0.006f, 0.7f, 1.4f);
+        int adjustedOrders = Mathf.Max(1, Mathf.RoundToInt(_currentDay.orderCount * repMult));
+        OrderManager.Instance.StartDay(adjustedOrders);
         TimeSystem.Instance.StartDay();
 
         EventBus.DayStarted(GameState.Instance.Day, _currentDay);
