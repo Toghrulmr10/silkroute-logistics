@@ -47,7 +47,7 @@ public class RouteAI : MonoBehaviour
         for (int i = 1; i < Mathf.Min(plans.Count, 3); i++)
             alts.Add(plans[i]);
 
-        bool aiActive = CampaignManager.Instance == null || CampaignManager.Instance.RouteAiActive;
+        bool aiActive = CampaignManager.Instance != null && CampaignManager.Instance.RouteAiActive;
 
         var rec = new Recommendation
         {
