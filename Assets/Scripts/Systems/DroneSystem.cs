@@ -105,8 +105,9 @@ public class DroneSystem : MonoBehaviour
 
         yield return new WaitForSeconds(flightTimeSec);
 
+        float totalElapsed2 = TimeSystem.Instance.GameTimeSeconds - order.CreatedAt;
         bool success = Random.value <= successProb
-                       && flightTimeSec <= order.DeadlineSeconds;
+                       && totalElapsed2 <= order.DeadlineSeconds;
 
         a.Battery = Mathf.Clamp(a.Battery - a.RoundTripBatteryCost(order.DistanceKm), 0f, 100f);
         b.Battery = Mathf.Clamp(b.Battery - b.RoundTripBatteryCost(order.DistanceKm), 0f, 100f);
