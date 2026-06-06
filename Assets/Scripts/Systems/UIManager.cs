@@ -20,7 +20,6 @@ public class UIManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         BuildUI();
-        Debug.Log($"[UIManager] Awake tamamlandı. CanvasRoot={(CanvasRoot != null ? CanvasRoot.name : "NULL")}");
     }
 
     void Start()
