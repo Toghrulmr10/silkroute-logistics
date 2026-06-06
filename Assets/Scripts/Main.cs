@@ -19,6 +19,8 @@ public static class Main
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Bootstrap()
     {
+        Application.runInBackground = true;
+
         // ── Core ──────────────────────────────────────────────────────────────
         CreateSingleton<GameState>("GameState");
         CreateSingleton<TimeSystem>("TimeSystem");
