@@ -121,6 +121,7 @@ public class RouteAI : MonoBehaviour
         float wf     = Mathf.Clamp(WeatherFactor() + WeatherAdjustment, 0.5f, 1f);
         float flight = (order.DistanceKm / (drone.SpeedKmh * wf)) * 60f;
         float success = Mathf.Min(0.98f, 0.9f * wf * 1.1f);
+        if (GameState.Instance.RouteUpgraded) success = Mathf.Min(success + 0.08f, 0.99f);
 
         return new RecommendationPlan
         {
