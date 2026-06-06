@@ -80,6 +80,50 @@ public static class SmokeTestMenu
     [MenuItem("SmokeTest/Set TimeScale 1")]
     static void SetTimeScale1() { Time.timeScale = 1f; Debug.Log("[SmokeTest] timeScale = 1"); }
 
+    // Force the Unity GameView to receive focus so the game loop begins ticking
+    [MenuItem("SmokeTest/Focus Game View")]
+    static void FocusGameView()
+    {
+        var t = System.Type.GetType("UnityEditor.GameView,UnityEditor");
+        if (t != null)
+        {
+            var w = EditorWindow.GetWindow(t);
+            w.Focus();
+            Debug.Log("[SmokeTest] GameView focused");
+        }
+        else Debug.LogWarning("[SmokeTest] GameView type not found");
+    }
+
+    // Directly advance GameTimeSeconds (bypasses coroutine scheduler — for testing only)
+    [MenuItem("SmokeTest/Advance Time 60s")]
+    static void AdvanceTime60()  => AdvanceGameTime(60f);
+
+    [MenuItem("SmokeTest/Advance Time 120s")]
+    static void AdvanceTime120() => AdvanceGameTime(120f);
+
+    [MenuItem("SmokeTest/Advance Time 480s")]
+    static void AdvanceTime480() => AdvanceGameTime(480f);
+
+    static void AdvanceGameTime(float seconds)
+    {
+        if (!Application.isPlaying) return;
+        var ts = TimeSystem.Instance;
+        if (ts == null) { Debug.LogError("[SmokeTest] TimeSystem null"); return; }
+        var f = typeof(TimeSystem).GetField("GameTimeSeconds",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.Public);
+        // Use backing field for auto-property
+        var bf = typeof(TimeSystem).GetField("<GameTimeSeconds>k__BackingField",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (bf != null)
+        {
+            float cur = (float)bf.GetValue(ts);
+            bf.SetValue(ts, cur + seconds);
+            Debug.Log($"[SmokeTest] Time advanced by {seconds}s → {cur + seconds:F1}");
+        }
+        else Debug.LogWarning("[SmokeTest] Could not find GameTimeSeconds backing field");
+    }
+
     [MenuItem("SmokeTest/Proceed To Shop")]
     static void ProceedToShop()
     {
