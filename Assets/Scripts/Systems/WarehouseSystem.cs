@@ -73,6 +73,22 @@ public class WarehouseSystem : MonoBehaviour
         return true;
     }
 
+    public void StopDay()
+    {
+        StopAllCoroutines();
+        foreach (var r in GameState.Instance.Robots)
+        {
+            r.Status         = RobotStatus.Idle;
+            r.CurrentOrderId = -1;
+        }
+        foreach (var c in GameState.Instance.Couriers)
+        {
+            c.Status         = CourierStatus.Idle;
+            c.CurrentOrderId = -1;
+        }
+        Debug.Log("[Warehouse] Gün dayandırıldı — robotlar və kuryerlər sıfırlandı");
+    }
+
     // ── Robot hazırlama koroutini ─────────────────────────────────────────────
     private IEnumerator PrepareOrder(Order order, Robot robot)
     {
