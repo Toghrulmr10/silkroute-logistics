@@ -218,7 +218,7 @@ public static class SmokeTestMenu
                 cr.CurrentOrderId = -1;
                 return true;
             }
-            d.Status = DroneStatus.Delivering;
+            d.Status = DroneStatus.InFlight;
             d.CurrentOrderId = order.Id;
             order.AssignedDroneId = d.Id;
             order.Type = DeliveryType.Drone;
