@@ -2,6 +2,22 @@ using UnityEngine;
 
 public static class Main
 {
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    static void AfterScene()
+    {
+        var cam = Camera.main;
+        if (cam != null)
+        {
+            cam.orthographic     = true;
+            cam.orthographicSize = 5f;
+            cam.backgroundColor  = new Color(0.04f, 0.05f, 0.04f);
+            cam.clearFlags       = CameraClearFlags.SolidColor;
+            Debug.Log("[Fix] Kamera Orthographic edildi.");
+        }
+        var root = UIManager.Instance?.CanvasRoot;
+        Debug.Log(root != null ? $"[Fix] CanvasRoot OK: {root.name}" : "[FIX] CanvasRoot NULL — UIManager problemi!");
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void Bootstrap()
     {
