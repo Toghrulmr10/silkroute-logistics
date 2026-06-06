@@ -246,7 +246,6 @@ public class DecisionPanel : MonoBehaviour
 
     private static Font GetBuiltinFont()
     {
-        var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        return f != null ? f : Resources.GetBuiltinResource<Font>("Arial.ttf");
+        return UIFont.Get();
     }
 }

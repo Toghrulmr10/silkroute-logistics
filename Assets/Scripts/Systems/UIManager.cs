@@ -214,10 +214,5 @@ public class UIManager : MonoBehaviour
         return t;
     }
 
-    static Font GetBuiltinFont()
-    {
-        var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
-        return f;
-    }
+    static Font GetBuiltinFont() => UIFont.Get();
 }
