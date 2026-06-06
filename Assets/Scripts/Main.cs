@@ -58,16 +58,6 @@ public static class Main
         Object.DontDestroyOnLoad(go);
     }
 
-    static void FixCamera()
-    {
-        var cam = Camera.main;
-        if (cam == null) return;
-        cam.orthographic     = true;
-        cam.orthographicSize = 5f;
-        cam.backgroundColor  = new Color(0.04f, 0.05f, 0.04f);
-        cam.clearFlags       = CameraClearFlags.SolidColor;
-    }
-
     static void SubscribeDebugListeners()
     {
         EventBus.OnOrderCreated        += o => Debug.Log($"[EVT] Created   ORD-{o.Id} {o.ProductName}");
