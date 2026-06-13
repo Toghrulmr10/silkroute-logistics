@@ -60,6 +60,8 @@ public class IntroPanel : MonoBehaviour
 
     private GameObject _root;
     private Image      _bg;
+    private Image      _bgImage;   // kart fon şəkli (varsa)
+    private Image      _scrim;     // mətn oxunaqlığı üçün qaranlıq pərdə
     private Text       _titleText;
     private Image      _accentLine;
     private Text       _bodyText;
@@ -111,6 +113,22 @@ public class IntroPanel : MonoBehaviour
     {
         var c = Cards[_index];
         _bg.color          = c.Bg;
+
+        // Fon şəkli varsa göstər (üstünə qaranlıq pərdə); yoxdursa düz rəng qalır
+        var bgSprite = SpriteLib.Get($"Sprites/Backgrounds/intro_{_index + 1}");
+        if (bgSprite != null)
+        {
+            _bgImage.sprite  = bgSprite;
+            _bgImage.color   = Color.white;
+            _bgImage.enabled = true;
+            _scrim.enabled   = true;
+        }
+        else
+        {
+            _bgImage.enabled = false;
+            _scrim.enabled   = false;
+        }
+
         _titleText.text    = c.Title;
         _titleText.color   = c.Accent;
         _accentLine.color  = c.Accent;
@@ -129,6 +147,15 @@ public class IntroPanel : MonoBehaviour
         var bgRT = _root.GetComponent<RectTransform>();
         bgRT.anchorMin = Vector2.zero; bgRT.anchorMax = Vector2.one;
         bgRT.offsetMin = bgRT.offsetMax = Vector2.zero;
+
+        // Fon şəkli (Resources/Sprites/Backgrounds/intro_N) — düz rəngin üstündə
+        _bgImage = MakeFullScreen(_root.transform, "BgImage");
+        _bgImage.enabled = false;
+
+        // Qaranlıq pərdə — şəklin üstündə, mətnin altında (oxunaqlıq üçün)
+        _scrim = MakeFullScreen(_root.transform, "Scrim");
+        _scrim.color   = new Color(0f, 0f, 0f, 0.5f);
+        _scrim.enabled = false;
 
         // Başlıq
         _titleText = MakeText(_root.transform, "", 40, TextAnchor.MiddleCenter, FontStyle.Bold,
@@ -168,6 +195,17 @@ public class IntroPanel : MonoBehaviour
     }
 
     // ── Köməkçilər ─────────────────────────────────────────────────────────────
+    private static Image MakeFullScreen(Transform parent, string name)
+    {
+        var go = new GameObject(name);
+        go.transform.SetParent(parent, false);
+        var img = go.AddComponent<Image>();
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
+        rt.offsetMin = rt.offsetMax = Vector2.zero;
+        return img;
+    }
+
     private static Text MakeText(Transform parent, string content, int size, TextAnchor align,
                                  FontStyle style, Vector2 anchorMin, Vector2 anchorMax)
     {
