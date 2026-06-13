@@ -232,12 +232,12 @@ public class MapView : MonoBehaviour
 
         var vGO = new GameObject($"V{order.Id}");
         vGO.transform.SetParent(_vehicleLayer, false);
-        vGO.AddComponent<Image>().color = TypeColors[(int)DeliveryType.Courier]; // default kuryer rəngi
+        vGO.AddComponent<Image>();
         var vRT = vGO.GetComponent<RectTransform>();
         vRT.anchorMin = vRT.anchorMax = new Vector2(0.5f, 0.5f);
         vRT.pivot     = new Vector2(0.5f, 0.5f);
-        vRT.sizeDelta = new Vector2(10f, 10f);
         _vehicles[order.Id] = vGO;
+        ApplyVehicleVisual(vGO, (int)DeliveryType.Courier); // default kuryer
 
         StartCoroutine(AnimateVehicle(order.Id, dest, order.DeadlineSeconds));
     }
@@ -245,7 +245,32 @@ public class MapView : MonoBehaviour
     void UpdateVehicleColor(int orderId, int typeIndex)
     {
         if (_vehicles.TryGetValue(orderId, out var vehicle))
-            vehicle.GetComponent<Image>().color = TypeColors[typeIndex];
+            ApplyVehicleVisual(vehicle, typeIndex);
+    }
+
+    // Çatdırılma tipinə görə sprite (dron/robot/kuryer); sprite yoxdursa rəngli nöqtəyə geri düşür
+    static readonly string[] VehicleSprites =
+        { "Sprites/courier_idle", "Sprites/robot_idle", "Sprites/drone_idle" };
+
+    void ApplyVehicleVisual(GameObject vehicle, int typeIndex)
+    {
+        var img = vehicle.GetComponent<Image>();
+        var rt  = vehicle.GetComponent<RectTransform>();
+        var sprite = SpriteLib.Get(VehicleSprites[typeIndex]);
+
+        if (sprite != null)
+        {
+            img.sprite        = sprite;
+            img.color         = Color.white;
+            img.preserveAspect = true;
+            rt.sizeDelta      = new Vector2(34f, 34f);
+        }
+        else
+        {
+            img.sprite   = null;
+            img.color    = TypeColors[typeIndex];
+            rt.sizeDelta = new Vector2(10f, 10f);
+        }
     }
 
     IEnumerator AnimateVehicle(int orderId, int destIdx, float duration)

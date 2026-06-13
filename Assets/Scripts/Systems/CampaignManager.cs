@@ -79,7 +79,12 @@ public class CampaignManager : MonoBehaviour
         GameState.Instance.ResetForNewGame();
         SaveSystem.Instance.DeleteSave();
         GameActive = true;
-        StartDay(0);
+
+        // Yeni oyunda əvvəlcə açılış hekayəsi, sonra Gün 1
+        if (IntroPanel.Instance != null)
+            IntroPanel.Instance.Show(() => StartDay(0));
+        else
+            StartDay(0);
     }
 
     public void ContinueGame()
