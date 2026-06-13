@@ -42,6 +42,7 @@ public static class Main
         CreateSingleton<DecisionPanel>("DecisionPanel");
         CreateSingleton<MapView>("MapView");
         CreateSingleton<MainMenuPanel>("MainMenuPanel");
+        CreateSingleton<IntroPanel>("IntroPanel");
         CreateSingleton<DayReportPanel>("DayReportPanel");
         CreateSingleton<ShopPanel>("ShopPanel");
         CreateSingleton<GameOverPanel>("GameOverPanel");
