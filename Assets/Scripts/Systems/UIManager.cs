@@ -53,7 +53,7 @@ public class UIManager : MonoBehaviour
     void RefreshRepText(int v)
     {
         if (_repText == null) return;
-        _repText.text  = $"★ {v}";
+        _repText.text  = v.ToString();
         _repText.color = v >= 70 ? new Color(0.3f, 1f, 0.4f)
                        : v >= 40 ? new Color(0.9f, 0.8f, 0.2f)
                                  : new Color(1f, 0.35f, 0.35f);
@@ -62,7 +62,7 @@ public class UIManager : MonoBehaviour
     void RefreshEnergyText(int v)
     {
         if (_energyText == null) return;
-        _energyText.text  = $"⚡{v}";
+        _energyText.text  = v.ToString();
         _energyText.color = v >= 50 ? new Color(0.3f, 0.85f, 1f)
                           : v >= 20 ? new Color(0.9f, 0.7f, 0.2f)
                                     : new Color(1f, 0.35f, 0.35f);
@@ -157,6 +157,11 @@ public class UIManager : MonoBehaviour
         et.anchorMin = new Vector2(0.75f, 0); et.anchorMax = new Vector2(1f, 1);
         et.offsetMin = Vector2.zero; et.offsetMax = new Vector2(-8, 0);
 
+        // HUD ikonları (sprite varsa rəqəmlərin solunda; yoxdursa sadəcə rəqəm qalır)
+        AddHudIcon(topBar, "Sprites/Icons/icon_coin",  0.255f);
+        AddHudIcon(topBar, "Sprites/Icons/icon_rep",   0.505f);
+        AddHudIcon(topBar, "Sprites/Icons/icon_power", 0.755f);
+
         // ── Orders panel (right side) ────────────────────────────────────────────
         var orders = MakePanel(root, "OrdersPanel", new Color(0.05f, 0.05f, 0.08f, 0.88f));
         orders.anchorMin        = new Vector2(1, 0);
@@ -226,6 +231,23 @@ public class UIManager : MonoBehaviour
 #else
         es.AddComponent<StandaloneInputModule>();
 #endif
+    }
+
+    // HUD ikonu (sprite Resources-dan yüklənirsə) — null olarsa heç nə etmir
+    static void AddHudIcon(RectTransform parent, string path, float anchorX)
+    {
+        var sprite = SpriteLib.Get(path);
+        if (sprite == null) return;
+        var go = new GameObject("Icon");
+        go.transform.SetParent(parent, false);
+        var img = go.AddComponent<Image>();
+        img.sprite         = sprite;
+        img.preserveAspect = true;
+        var rt = go.GetComponent<RectTransform>();
+        rt.anchorMin = rt.anchorMax = new Vector2(anchorX, 0.5f);
+        rt.pivot            = new Vector2(0f, 0.5f);
+        rt.sizeDelta        = new Vector2(24f, 24f);
+        rt.anchoredPosition = new Vector2(4f, 0f);
     }
 
     static RectTransform MakePanel(Transform parent, string name, Color color)
